@@ -1,7 +1,68 @@
 const path = require('path');
 const fs = require('fs-extra');
 const nodemailer = require('nodemailer');
-const config = require('../../config.json');
+let config = require('../../config.json');
+
+// 支持通过环境变量覆盖配置（适用于 Vercel 等云平台）
+if (process.env.MONGODB_CONNECTION_STRING) {
+  config.db = config.db || {};
+  config.db.connectString = process.env.MONGODB_CONNECTION_STRING;
+}
+
+// 数据库配置的环境变量支持
+if (process.env.DB_SERVERNAME) {
+  config.db = config.db || {};
+  config.db.servername = process.env.DB_SERVERNAME;
+}
+if (process.env.DB_DATABASE) {
+  config.db = config.db || {};
+  config.db.DATABASE = process.env.DB_DATABASE;
+}
+if (process.env.DB_PORT) {
+  config.db = config.db || {};
+  config.db.port = parseInt(process.env.DB_PORT, 10);
+}
+if (process.env.DB_USER) {
+  config.db = config.db || {};
+  config.db.user = process.env.DB_USER;
+}
+if (process.env.DB_PASS) {
+  config.db = config.db || {};
+  config.db.pass = process.env.DB_PASS;
+}
+if (process.env.DB_AUTH_SOURCE) {
+  config.db = config.db || {};
+  config.db.authSource = process.env.DB_AUTH_SOURCE;
+}
+
+// 邮件配置的环境变量支持
+if (process.env.MAIL_HOST) {
+  config.mail = config.mail || {};
+  config.mail.host = process.env.MAIL_HOST;
+}
+if (process.env.MAIL_PORT) {
+  config.mail = config.mail || {};
+  config.mail.port = parseInt(process.env.MAIL_PORT, 10);
+}
+if (process.env.MAIL_FROM) {
+  config.mail = config.mail || {};
+  config.mail.from = process.env.MAIL_FROM;
+}
+if (process.env.MAIL_USER) {
+  config.mail = config.mail || {};
+  config.mail.auth = config.mail.auth || {};
+  config.mail.auth.user = process.env.MAIL_USER;
+}
+if (process.env.MAIL_PASS) {
+  config.mail = config.mail || {};
+  config.mail.auth = config.mail.auth || {};
+  config.mail.auth.pass = process.env.MAIL_PASS;
+}
+
+// 端口配置
+if (process.env.PORT) {
+  config.port = process.env.PORT;
+}
 
 let insts = new Map();
 let mail;
