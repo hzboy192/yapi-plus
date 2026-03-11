@@ -12,14 +12,14 @@ function model(model, schema) {
   return mongoose.model(model, schema, model);
 }
 
+// 存储 mongoose.connect 返回的 Promise，供插件使用
+let connectPromise;
+
 function connect(callback) {
   mongoose.Promise = global.Promise;
-  mongoose.set('useNewUrlParser', true);
-  mongoose.set('useFindAndModify', false);
-  mongoose.set('useCreateIndex', true);
 
   let config = yapi.WEBCONFIG;
-  let options = {useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true};
+  let options = {};
 
   if (config.db.user) {
     options.user = config.db.user;
@@ -48,31 +48,21 @@ function connect(callback) {
     }
   }
 
-  let db = mongoose.connect(
-    connectString,
-    options,
-    function(err) {
-      if (err) {
-        yapi.commons.log(err + ', mongodb Authentication failed', 'error');
-      }
-    }
-  );
+  // 在连接前初始化 autoIncrement（它只需要 mongoose，不需要实际的连接）
+  autoIncrement.initialize(mongoose);
 
-  db.then(
-    function() {
+  connectPromise = mongoose.connect(connectString, options)
+    .then(function(db) {
       yapi.commons.log('mongodb load success...');
-
       if (typeof callback === 'function') {
         callback.call(db);
       }
-    },
-    function(err) {
+    })
+    .catch(function(err) {
       yapi.commons.log(err + 'mongodb connect error', 'error');
-    }
-  );
+    });
 
-  autoIncrement.initialize(db);
-  return db;
+  return connectPromise;
 }
 
 yapi.db = model;

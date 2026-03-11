@@ -58,7 +58,7 @@ app.use(async (ctx, next) => {
 app.use(koaStatic(yapi.path.join(yapi.WEBROOT, 'static'), { index: indexFile, gzip: true }));
 
 
-const server = app.listen(yapi.WEBCONFIG.port);
+const server = app.listen(yapi.WEBCONFIG.port, '0.0.0.0');
 
 server.setTimeout(yapi.WEBCONFIG.timeout);
 

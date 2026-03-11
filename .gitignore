@@ -15,6 +15,7 @@ target/
 *.ipr
 *.iml
 *.iws
+.claude
 
 # temp ignore
 *.log

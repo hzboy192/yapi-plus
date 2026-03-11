@@ -1,0 +1,23 @@
+services:
+  yapi-plus:
+    image: hzboy192/yapi-plus:latest
+    container_name: yapi-plus
+    networks: 
+      - default
+    ports:
+      - 3000:3000
+    environment:
+      - YAPI_ADMIN_ACCOUNT=admin@docker.yapi
+      - YAPI_ADMIN_PASSWORD=admin
+      - YAPI_CLOSE_REGISTER=true
+      - YAPI_DB_SERVERNAME=172.17.0.1
+      - YAPI_DB_PORT=27017
+      - YAPI_DB_DATABASE=yapi
+      - YAPI_MAIL_ENABLE=false
+      - YAPI_LDAP_LOGIN_ENABLE=false
+      - YAPI_PLUGINS=[]
+    restart: unless-stopped
+
+networks:
+  default:
+    external: true
